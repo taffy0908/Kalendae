@@ -189,6 +189,7 @@ var Kalendae = function (targetElement, options) {
 		} else if ( (util.hasClassName(target.parentNode, classes.days) || util.hasClassName(target.parentNode, classes.week)) && util.hasClassName(target, classes.dayActive) && (clickedDate = target.getAttribute('data-date'))) {
 		//DAY CLICK
 			clickedDate = moment(clickedDate, opts.dayAttributeFormat).hours(12);
+			
 			if (self.publish('date-clicked', self, [clickedDate]) !== false) {
 
 				switch (opts.mode) {
@@ -291,6 +292,8 @@ Kalendae.prototype = {
 	disableNextMonth: false,
 	disablePreviousYear: false,
 	disableNextYear: false,
+
+	lastSelectedDate: null,
 
 	directions: {
 		'past'          :function (date) {return moment(date).startOf('day').yearDay() >= today.yearDay();},
@@ -403,14 +406,32 @@ Kalendae.prototype = {
 	},
 
 	addSelected : function (date, draw) {
+		var event;
 		date = moment(date, this.settings.format).hours(12);
 
 		if(this.settings.dayOutOfMonthClickable && this.settings.mode !== 'range'){ this.makeSelectedDateVisible(date); }
-
+		// 判断第二个参数是否是event，用以后续进行组合键判断。
+		if(draw instanceof Event) {
+			event = draw;
+		}
 		switch (this.settings.mode) {
 			case 'multiple':
-				if (!this.isSelected(date)) this._sel.push(date);
-				else return false;
+				// 功能：实现通过shift键控制进行段日期复选。
+				if (event && event.shiftKey) {
+					var out = date.daysBetween(this.lastSelectedDate);
+					for(var i = 0;i<out.length;i++) {
+						if(!this.isSelected(out[i])) {
+							this._sel.push(out[i]);
+						}
+					}
+					this.lastSelectedDate = date;
+				} else {
+					this.lastSelectedDate = date;
+					if (!this.isSelected(date)) {
+						this._sel.push(date);
+					}
+					else return false;
+				}
 				break;
 			case 'range':
 

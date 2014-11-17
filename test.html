@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html lang="ru-RU">
+<head>
+	<meta charset="UTF-8">
+	<title>实用shift实现段日期复选</title>
+	<link rel="stylesheet" type="text/css" href="build/kalendae.css" charset="utf-8">
+	<script type="text/javascript" src="build/kalendae.standalone.js" charset="utf-8"></script>
+</head>
+<body>
+	<h1>Kalendae</h1>
+	<p>Multi-Select</p>
+	<div id="kalendae"></div>
+	<script type="text/javascript" charset="utf-8">
+		var kal = new Kalendae(document.body, {
+			months:1,
+			mode:'multiple',
+			selected:[Kalendae.moment().subtract({M:1}), Kalendae.moment().add({M:1})]
+		});
+		
+		kal.subscribe('change', function () {
+			var datesStr = kal.getSelected();
+			var kalendaeDom = document.querySelector('#kalendae');
+			kalendaeDom.innerHTML = '';
+			kalendaeDom.innerHTML = datesStr;
+		});
+		
+	</script>
+
+</body>
+</html>
