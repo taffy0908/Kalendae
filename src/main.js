@@ -194,7 +194,7 @@ var Kalendae = function (targetElement, options) {
 
 				switch (opts.mode) {
 					case 'multiple':
-						if (!self.addSelected(clickedDate)) self.removeSelected(clickedDate);
+						if (!self.addSelected(clickedDate, event)) self.removeSelected(clickedDate);
 						break;
 					case 'range':
 						self.addSelected(clickedDate);
